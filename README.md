@@ -1,8 +1,8 @@
 # MOVIE WEBSITE
 
-To Add:
+Add:
 • To Add Moviecard with title and released year.
-To Edit and Delete:
+Edit and Delete:
 • To edit and delete movie card.
 
 # TYPESCRIPT
