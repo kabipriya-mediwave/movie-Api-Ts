@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getMovies, deleteMovie } from "../services/api"; // Import deleteMovie function
+import { getMovies, deleteMovie } from "../services/api";
 import "@picocss/pico";
 import Layout from "../components/layout";
+import { IMovie } from "../type";
 
-interface IMovie {
-  id: number;
-  title: string;
-  year: number;
+interface IHome {
+  handleEdit: (movie: IMovie) => void;
 }
-
-function Home() {
+const Home: React.FC<IHome> = ({ handleEdit }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [movies, setMovies] = useState<IMovie[]>([]);
+  const [isMovieDeleted, setIsMovieDeleted] = useState(false);
 
   useEffect(() => {
     console.log("Called once");
@@ -37,12 +36,17 @@ function Home() {
     setRefresh(true);
     try {
       await deleteMovie(id);
+      setIsMovieDeleted(true);
     } catch (error) {
       console.error("Error deleting movie:", error);
     } finally {
       setRefresh(false);
     }
   }
+
+  const closeDeleteDialog = () => {
+    setIsMovieDeleted(false);
+  };
 
   return (
     <>
@@ -68,7 +72,7 @@ function Home() {
                   <h1>{m.year}</h1>
 
                   <Link to={`/edit/${m.id}`} className="pico-link">
-                    <button>Edit</button>
+                    <button onClick={() => handleEdit(m)}>Edit</button>
                   </Link>
                   <button
                     onClick={() => handleDeleteMovie(m.id)}
@@ -82,8 +86,22 @@ function Home() {
           )}
         </div>
       </Layout>
+      {isMovieDeleted && (
+        <dialog open>
+          <article>
+            <header>
+              <a
+                aria-label="Close"
+                className="close"
+                onClick={closeDeleteDialog}
+              ></a>
+            </header>
+            <p>Successfully deleted</p>
+          </article>
+        </dialog>
+      )}
     </>
   );
-}
+};
 
 export default Home;
